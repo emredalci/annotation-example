@@ -15,15 +15,20 @@ public class RunTests2 {
             if (method.isAnnotationPresent(ExceptionTest.class) || method.isAnnotationPresent(ExceptionTestContainer.class)) {
                 tests ++;
                 try {
-                    method.invoke(null);
+                    method.invoke(null); //For static methods
                     System.out.printf("Passed: %s, Failed: no exception%n", method);
                 } catch (InvocationTargetException exception) {
                     Throwable cause = exception.getCause();
-                    Class<? extends Throwable> exceptionType = method.getAnnotation(ExceptionTest.class).value();
-                    if (exceptionType.isInstance(cause)){
-                        passed ++;
-                    } else {
-                        System.out.printf("Test %s failed: expected %s , got %s%n", method, exceptionType.getName(), cause);
+                    int oldPassed = passed;
+                    ExceptionTest[] exceptions = method.getAnnotationsByType(ExceptionTest.class);
+                    for (ExceptionTest exceptionTest: exceptions) {
+                        if (exceptionTest.value().isInstance(cause)){
+                            passed ++;
+                            break;
+                        }
+                    }
+                    if (passed == oldPassed){
+                        System.out.printf("Test %s failed: %s%n", method, cause);
                     }
                 } catch (Exception e) {
                     System.out.println("Invalid @Test: " + method);

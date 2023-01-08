@@ -15,7 +15,7 @@ public class RunTests {
             if (method.isAnnotationPresent(Test.class)) {
                 tests ++;
                 try {
-                    method.invoke(null);
+                    method.invoke(null); //For static methods
                     passed ++;
                 } catch (InvocationTargetException exception) {
                     Throwable cause = exception.getCause();
